@@ -21,7 +21,7 @@ export default function Report({ ev, editable, onChange }:Props) {
           <input className="!w-16" type="number" value={c.score} onChange={e=>setCrit(i,{ score:Number(e.target.value) })}/></> : <><Badge tone="blue">{LEVEL_LABEL[c.level] ?? c.level}</Badge><span className="text-sm font-medium">{c.score}</span></>}
           <span className="text-sm text-zinc-500">/ {c.max}</span></div></div>
       {editable ? <textarea className="mt-2" rows={3} value={c.feedback} onChange={e=>setCrit(i,{ feedback:e.target.value })}/> : <p className="mt-2 text-sm text-zinc-700">{c.feedback}</p>}
-      {c.evidence && <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-md bg-zinc-50 p-2 text-xs text-zinc-600">{c.evidence}</pre>}</div>)}</Card>
+      {editable ? <textarea className="mt-2" rows={2} placeholder="Evidence supporting this score" value={c.evidence} onChange={e=>setCrit(i,{ evidence:e.target.value })}/> : c.evidence && <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-md bg-zinc-50 p-2 text-xs text-zinc-600">{c.evidence}</pre>}</div>)}</Card>
     {editable ? <Card><h3 className="mb-2 text-sm font-semibold">Mentor recommendations</h3><textarea rows={5} value={ev.mentor_recommendations} onChange={e=>onChange?.({ ...ev, mentor_recommendations:e.target.value })}/></Card>
       : <Card><h3 className="mb-2 text-sm font-semibold">Mentor recommendations</h3><p className="whitespace-pre-wrap text-sm text-zinc-700">{ev.mentor_recommendations}</p></Card>}
     <div className="grid gap-4 md:grid-cols-3">{list('strengths','Strengths')}{list('weaknesses','Weaknesses')}{list('suggestions','Improvement suggestions')}</div></div>
