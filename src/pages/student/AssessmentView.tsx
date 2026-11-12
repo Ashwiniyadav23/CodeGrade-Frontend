@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { api, Assessment, Evaluation } from '../../lib/api'
 import Report from '../../components/Report'
-import CodeWorkspace from '../../components/CodeWorkspace'
 import { Badge, Button, Card, Label, PageHeader, statusTone } from '../../components/ui'
 export default function AssessmentView() {
   const { id } = useParams();
@@ -25,7 +24,7 @@ export default function AssessmentView() {
         {q.instructions && <p className="mt-2 whitespace-pre-wrap rounded-md bg-zinc-50 p-3 text-sm text-zinc-600">{q.instructions}</p>}</Card>)}
       <Card><h3 className="mb-3 font-semibold">Evaluation rubric</h3><div className="space-y-3">{a.rubric.map(c=><details key={c.id} className="rounded-md border border-zinc-200 p-3"><summary className="cursor-pointer text-sm font-medium">{c.name} <span className="text-zinc-500">({c.marks} marks)</span></summary>
         <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-600">{c.description}</p></details>)}</div></Card>
-      <CodeWorkspace assessmentId={a.id} questions={a.questions} disabled={late || (!!sub && !a.allow_resubmit)} onSubmitted={load} />
+      <Card><h3 className="mb-2 font-semibold">VS Code workspace</h3><p className="mb-3 text-sm text-zinc-600">Write, run, and submit your project in the browser without uploading a ZIP.</p><Link to={`/student/${a.id}/code`}><Button>Open coding workspace</Button></Link></Card>
       <Card><h3 className="mb-3 font-semibold">Legacy submission (optional)</h3>
         {sub && <p className="mb-3 text-sm text-zinc-500">Version {sub.version} submitted {new Date(sub.created_at).toLocaleString()}.</p>}
         {canSubmit ? <div className="space-y-3"><div><Label>Project folder as ZIP</Label><input type="file" accept=".zip" onChange={e=>setFile(e.target.files?.[0]??null)}/></div>
