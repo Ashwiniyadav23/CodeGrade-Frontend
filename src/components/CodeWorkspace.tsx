@@ -26,12 +26,12 @@ export default function CodeWorkspace({ assessmentId, questions, disabled, onSub
   const addFile = () => { const name = window.prompt('New file path', 'index.js')?.trim(); if (!name || files.some(f => f.path === name)) return; setFiles([...files, { path: name, content: '' }]); setActive(name) }
   const rename = () => { if (!active) return; const name = window.prompt('Rename file', active)?.trim(); if (!name || files.some(f => f.path === name)) return; setFiles(files.map(f => f.path === active ? { ...f, path: name } : f)); setActive(name) }
   const remove = () => { if (files.length === 1) return; if (window.confirm(`Delete ${active}?`)) { const next = files.filter(f => f.path !== active); setFiles(next); setActive(next[0].path) } }
-  return <div className="overflow-hidden rounded-2xl border border-slate-800 bg-[#1e1e1e] text-slate-200 shadow-xl">
+  return <div className="flex h-[calc(100vh-220px)] min-h-[420px] flex-col overflow-hidden rounded-2xl border border-slate-800 bg-[#1e1e1e] text-slate-200 shadow-xl">
     <div className="flex items-center justify-between border-b border-slate-700 bg-[#252526] px-3 py-2">
       <div className="flex items-center gap-2 text-sm"><span className="h-2.5 w-2.5 rounded-full bg-blue-500" /> Code workspace</div>
       <div className="flex gap-2"><Button variant="ghost" className="!h-8 !px-3 !text-xs text-slate-200 hover:bg-slate-700" onClick={addFile} disabled={disabled}>New file</Button><Button variant="ghost" className="!h-8 !px-3 !text-xs text-slate-200 hover:bg-slate-700" onClick={rename} disabled={disabled || !active}>Rename</Button><Button variant="ghost" className="!h-8 !px-3 !text-xs text-slate-200 hover:bg-slate-700" onClick={remove} disabled={disabled || files.length < 2}>Delete</Button></div>
     </div>
-    <div className="grid min-h-[620px] grid-cols-[220px_minmax(0,1fr)]">
+    <div className="grid min-h-0 flex-1 grid-cols-[220px_minmax(0,1fr)]">
       <aside className="border-r border-slate-700 bg-[#252526] p-3">
         <div className="mb-4 border-b border-slate-700 pb-4"><div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Assessment</div>{questions.map((q, i) => <div key={i} className="mb-3 text-xs"><div className="font-semibold text-slate-200">{i + 1}. {q.title}</div><p className="mt-1 whitespace-pre-wrap text-slate-400">{q.description} {q.instructions}</p></div>)}</div>
         <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Explorer</div>
