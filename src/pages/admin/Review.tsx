@@ -12,7 +12,7 @@ export default function Review() {
   if(!s) return null
   return <><PageHeader title={s.assessment?.title} sub={`${s.student?.full_name} · ${s.student?.email} · version ${s.version}`} action={<Badge tone={statusTone[s.status]}>{s.status}</Badge>}/>
     <Card className="mb-4 flex flex-wrap items-center gap-2 text-sm">
-      {s.zip_path && <Button variant="outline" onClick={()=>api.download(`/submissions/${id}/download`,'submission.zip')}>Download ZIP</Button>}
+      {(s.zip_path || s.file_id) && <Button variant="outline" onClick={()=>api.download(`/submissions/${id}/download`,'submission.zip')}>Download ZIP</Button>}
       {s.github_url && <a className="text-blue-600 hover:underline" href={s.github_url} target="_blank">GitHub repository</a>}
       <div className="ml-auto flex gap-2"><Button variant="outline" onClick={run} disabled={!!busy}>{busy==='ai'?'Evaluating…':ev?'Re-run AI evaluation':'Run AI evaluation'}</Button>
         {ev && <><Button variant="outline" onClick={()=>save(false)} disabled={!!busy}>Save feedback</Button><Button onClick={()=>save(true)} disabled={!!busy}>Approve & publish</Button></>}</div></Card>
