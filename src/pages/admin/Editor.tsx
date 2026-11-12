@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { api, uid, LEVELS, LEVEL_LABEL, Assessment, Criterion, Question } from '../../lib/api'
+import { api, uid, Criterion, Question } from '../../lib/api'
 import { Button, Card, Label, PageHeader } from '../../components/ui'
 const blank = { title:'', description:'', language:'Python', difficulty:'Medium', deadline:'', max_marks:0, allow_resubmit:false, starter_url:null as string|null, questions:[] as Question[], rubric:[] as Criterion[] }
 export default function Editor() {
@@ -31,9 +31,9 @@ export default function Editor() {
           <textarea rows={2} placeholder="Description" value={q.description} onChange={e=>upd('questions',i,{ description:e.target.value })}/>
           <textarea rows={2} placeholder="Instructions" value={q.instructions} onChange={e=>upd('questions',i,{ instructions:e.target.value })}/></div>)}</div></Card>
       <Card><div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">Rubric <span className="ml-2 text-sm font-normal text-zinc-500">Total: {total} marks</span></h2>
-        <Button variant="outline" onClick={()=>set('rubric',[...a.rubric,{ id:uid(), name:'', description:'', marks:10, levels:{ excellent:'', good:'', average:'', needs_improvement:'' } }])}>Add criterion</Button></div>
+        <Button variant="outline" onClick={()=>set('rubric',[...a.rubric,{ id:uid(), name:'', description:'', marks:10 }])}>Add criterion</Button></div>
         <div className="space-y-3">{a.rubric.map((c:Criterion,i:number)=><div key={c.id} className="space-y-2 rounded-md border border-zinc-200 p-3">
           <div className="flex gap-2"><input placeholder="Criterion name (e.g. Code quality)" value={c.name} onChange={e=>upd('rubric',i,{ name:e.target.value })}/><input className="!w-24" type="number" min={0} value={c.marks} onChange={e=>upd('rubric',i,{ marks:Number(e.target.value) })}/><Button variant="ghost" onClick={()=>set('rubric',a.rubric.filter((_:any,j:number)=>j!==i))}>Remove</Button></div>
-          <textarea rows={5} placeholder="Describe what this criterion assesses. You can write multiple paragraphs." value={c.description} onChange={e=>upd('rubric',i,{ description:e.target.value })}/>
-          <div className="grid gap-2 md:grid-cols-2">{LEVELS.map(l=><div key={l}><Label>{LEVEL_LABEL[l]}</Label><textarea rows={4} placeholder={`Describe the expectations for ${LEVEL_LABEL[l].toLowerCase()} performance.`} value={c.levels[l]} onChange={e=>upd('rubric',i,{ levels:{ ...c.levels, [l]:e.target.value } })}/></div>)}</div></div>)}</div></Card></div></>
+          <textarea rows={8} placeholder="Describe the rubric requirements and how this criterion should be assessed. You can write multiple paragraphs." value={c.description} onChange={e=>upd('rubric',i,{ description:e.target.value })}/>
+        </div>)}</div></Card></div></>
 }

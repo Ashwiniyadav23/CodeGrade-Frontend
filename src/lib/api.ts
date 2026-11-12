@@ -1,6 +1,6 @@
 export const LEVELS = ['excellent','good','average','needs_improvement'] as const
 export const LEVEL_LABEL: Record<string,string> = { excellent:'Excellent', good:'Good', average:'Average', needs_improvement:'Needs Improvement' }
-export type Criterion = { id:string; name:string; description:string; marks:number; levels: Record<string,string> }
+export type Criterion = { id:string; name:string; description:string; marks:number }
 export type Question = { id:string; title:string; description:string; instructions:string }
 export type Assessment = { id:string; title:string; description:string; language:string; difficulty:string; deadline:string|null; max_marks:number; allow_resubmit:boolean; starter_url:string|null; questions:Question[]; rubric:Criterion[] }
 export type EvalCriterion = { criterion_id:string; name:string; max:number; score:number; level:string; feedback:string; evidence:string }
