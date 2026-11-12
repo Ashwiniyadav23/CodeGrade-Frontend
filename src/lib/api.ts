@@ -7,10 +7,11 @@ export type EvalCriterion = { criterion_id:string; name:string; max:number; scor
 export type Evaluation = { id:string; criteria:EvalCriterion[]; total:number; max:number; strengths:string[]; weaknesses:string[]; suggestions:string[]; mentor_recommendations:string; performance_level:'Basic'|'Average'|'Good'|'Excellent'; summary:string; status:'draft'|'published' }
 export const uid = () => crypto.randomUUID()
 export const token = { get:()=>localStorage.getItem('token'), set:(t:string)=>localStorage.setItem('token',t), clear:()=>localStorage.removeItem('token') }
+const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
 async function raw(path:string, opts:RequestInit={}) {
   const headers:Record<string,string> = { ...(token.get() ? { Authorization:`Bearer ${token.get()}` } : {}) }
   if(opts.body && !(opts.body instanceof FormData)) headers['Content-Type'] = 'application/json'
-  const res = await fetch('/api'+path, { ...opts, headers })
+  const res = await fetch(API_BASE + path, { ...opts, headers })
   if(!res.ok){ const d = await res.json().catch(()=>({})); throw new Error(d.error ?? res.statusText) }
   return res
 }
