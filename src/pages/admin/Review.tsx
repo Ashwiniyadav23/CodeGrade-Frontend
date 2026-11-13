@@ -19,5 +19,6 @@ export default function Review() {
         {ev && !editing && <Button variant="outline" onClick={()=>setEditing(true)} disabled={!!busy}>Edit feedback</Button>}
         {ev && editing && <><Button variant="outline" onClick={cancelEdit} disabled={!!busy}>Cancel</Button><Button variant="outline" onClick={()=>save(false)} disabled={!!busy}>Save feedback</Button><Button onClick={()=>save(true)} disabled={!!busy}>Approve & publish</Button></>}</div></Card>
     {err && <p className="mb-4 text-sm text-red-600">{err}</p>}
+    {s.viva_messages?.length > 0 && <Card className="mb-4"><h3 className="mb-2 font-semibold">Practical viva conversation</h3><div className="max-h-72 space-y-2 overflow-auto text-sm">{s.viva_messages.map((m:any,i:number)=><p key={i}><strong>{m.role==='student'?'Student':'AI'}:</strong> {m.text}</p>)}</div>{s.viva_modification_task && <p className="mt-3 text-sm"><strong>Modification task:</strong> {s.viva_modification_task}</p>}</Card>}
     {ev ? <Report ev={ev} editable={editing} onChange={setEv}/> : <Card className="py-10 text-center text-sm text-zinc-500">No evaluation yet. Run the AI evaluation to generate a draft you can review.</Card>}</>
 }

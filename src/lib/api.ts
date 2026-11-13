@@ -2,10 +2,11 @@ export const LEVELS = ['excellent','good','average','needs_improvement'] as cons
 export const LEVEL_LABEL: Record<string,string> = { excellent:'Excellent', good:'Good', average:'Average', needs_improvement:'Needs Improvement' }
 export type Criterion = { id:string; name:string; description:string; marks:number }
 export type Question = { id:string; title:string; description:string; instructions:string }
-export type Assessment = { id:string; title:string; description:string; language:string; difficulty:string; deadline:string|null; max_marks:number; allow_resubmit:boolean; theory_enabled:boolean; theory_question_count:number; practical_marks:number; theory_marks:number; starter_url:string|null; questions:Question[]; rubric:Criterion[] }
+export type Assessment = { id:string; title:string; description:string; language:string; difficulty:string; deadline:string|null; max_marks:number; allow_resubmit:boolean; theory_enabled:boolean; theory_question_count:number; practical_marks:number; theory_marks:number; viva_enabled:boolean; viva_question_count:number; viva_marks:number; viva_difficulty:string; starter_url:string|null; questions:Question[]; rubric:Criterion[] }
 export type EvalCriterion = { criterion_id:string; name:string; max:number; score:number; level:string; feedback:string; evidence:string }
 export type TheoryCriterion = { question_id:string; question:string; answer:string; max:number; score:number; feedback:string }
-export type Evaluation = { id:string; criteria:EvalCriterion[]; theory_criteria?:TheoryCriterion[]; practical_total?:number; practical_max?:number; theory_total?:number; theory_max?:number; total:number; max:number; strengths:string[]; weaknesses:string[]; suggestions:string[]; mentor_recommendations:string; performance_level:'Basic'|'Average'|'Good'|'Excellent'; summary:string; status:'draft'|'published' }
+export type VivaCriterion = { question_id:string; question:string; answer:string; max:number; score:number; feedback:string }
+export type Evaluation = { id:string; criteria:EvalCriterion[]; theory_criteria?:TheoryCriterion[]; viva_criteria?:VivaCriterion[]; practical_total?:number; practical_max?:number; theory_total?:number; theory_max?:number; viva_total?:number; viva_max?:number; total:number; max:number; strengths:string[]; weaknesses:string[]; suggestions:string[]; mentor_recommendations:string; performance_level:'Basic'|'Average'|'Good'|'Excellent'; summary:string; status:'draft'|'published' }
 export const uid = () => crypto.randomUUID()
 export const token = { get:()=>localStorage.getItem('token'), set:(t:string)=>localStorage.setItem('token',t), clear:()=>localStorage.removeItem('token') }
 const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
