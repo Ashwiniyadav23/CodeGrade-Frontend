@@ -29,7 +29,7 @@ export default function AssessmentView() {
         {sub && <p className="mb-3 text-sm text-zinc-500">Version {sub.version} submitted {new Date(sub.created_at).toLocaleString()}.</p>}
         {canSubmit ? <div className="space-y-3">        <div><Label>Project folder as ZIP (images included)</Label><p className="mb-1 text-xs text-zinc-500">Include images inside the ZIP with your project files.</p><input type="file" accept=".zip,application/zip" onChange={e=>setFile(e.target.files?.[0]??null)}/></div>
           <div><Label>GitHub repository link (optional)</Label><input placeholder="https://github.com/you/project" value={gh} onChange={e=>setGh(e.target.value)}/></div>
-          <Button onClick={submit} disabled={busy}>{busy?'Uploading…':sub?'Resubmit':'Submit assignment'}</Button></div>
+          <Button onClick={submit} disabled={busy}>{busy?'Uploading and evaluating…':sub?'Resubmit':'Submit assignment'}</Button></div>
           : <p className="text-sm text-zinc-500">{late?'The deadline has passed.':'Resubmission is not enabled for this assessment.'}</p>}</Card>
       {ev ? <><h2 className="pt-2 text-lg font-semibold">Evaluation feedback</h2><Report ev={ev}/></> : sub && <Card className="text-sm text-zinc-500">Your evaluation feedback will appear here once your instructor reviews it.</Card>}</div></>
 }
