@@ -27,7 +27,7 @@ export default function AssessmentView() {
       <Card><h3 className="mb-2 font-semibold">VS Code workspace</h3><p className="mb-3 text-sm text-zinc-600">Write, run, and submit your project in the browser without uploading a ZIP.</p><Link to={`/student/${a.id}/code`}><Button>Open coding workspace</Button></Link></Card>
       <Card><h3 className="mb-3 font-semibold">Legacy submission (optional)</h3>
         {sub && <p className="mb-3 text-sm text-zinc-500">Version {sub.version} submitted {new Date(sub.created_at).toLocaleString()}.</p>}
-        {canSubmit ? <div className="space-y-3"><div><Label>Project folder as ZIP</Label><input type="file" accept=".zip" onChange={e=>setFile(e.target.files?.[0]??null)}/></div>
+        {canSubmit ? <div className="space-y-3">        <div><Label>Project folder as ZIP (images included)</Label><p className="mb-1 text-xs text-zinc-500">Include images inside the ZIP with your project files.</p><input type="file" accept=".zip,application/zip" onChange={e=>setFile(e.target.files?.[0]??null)}/></div>
           <div><Label>GitHub repository link (optional)</Label><input placeholder="https://github.com/you/project" value={gh} onChange={e=>setGh(e.target.value)}/></div>
           <Button onClick={submit} disabled={busy}>{busy?'Uploading…':sub?'Resubmit':'Submit assignment'}</Button></div>
           : <p className="text-sm text-zinc-500">{late?'The deadline has passed.':'Resubmission is not enabled for this assessment.'}</p>}</Card>
