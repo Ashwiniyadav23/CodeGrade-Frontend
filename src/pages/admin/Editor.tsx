@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, uid, Criterion, Question } from '../../lib/api'
 import { Button, Card, Label, PageHeader } from '../../components/ui'
-const blank = { title:'', description:'', language:'Python', difficulty:'Medium', deadline:'', max_marks:0, allow_resubmit:false, starter_url:null as string|null, questions:[] as Question[], rubric:[] as Criterion[] }
+const blank = { title:'', description:'', language:'Python', difficulty:'Medium', deadline:'', max_marks:0, allow_resubmit:false, theory_enabled:false, theory_question_count:5, practical_marks:70, theory_marks:30, starter_url:null as string|null, questions:[] as Question[], rubric:[] as Criterion[] }
 export default function Editor() {
   const { id } = useParams(); const nav = useNavigate(); const [a,setA] = useState<any>(blank); const [busy,setBusy] = useState(false)
   useEffect(()=>{ if(id) api.get('/assessments/'+id).then(data=>setA({ ...data, deadline: data.deadline ? new Date(data.deadline).toISOString().slice(0,16) : '' })) },[id])
@@ -12,7 +12,7 @@ export default function Editor() {
   const upload = async (f:File) => { const fd = new FormData(); fd.append('file',f); try { const r = await api.post('/upload/starter',fd); set('starter_url', r.url) } catch(e:any){ alert(e.message) } }
   const save = async () => { if(!a.title) return alert('Title is required'); setBusy(true)
     const row = { title:a.title, description:a.description, language:a.language, difficulty:a.difficulty, deadline:a.deadline?new Date(a.deadline).toISOString():null,
-      max_marks: total || Number(a.max_marks), allow_resubmit:a.allow_resubmit, starter_url:a.starter_url, questions:a.questions, rubric:a.rubric }
+      max_marks: (a.theory_enabled ? Number(a.practical_marks || total || a.max_marks) : Number(total || a.max_marks)) + (a.theory_enabled ? Number(a.theory_marks || 0) : 0), allow_resubmit:a.allow_resubmit, theory_enabled:a.theory_enabled, theory_question_count:Math.min(10, Math.max(4, Number(a.theory_question_count || 5))), practical_marks:Number(a.theory_enabled ? (a.practical_marks || total || a.max_marks) : (total || a.max_marks)), theory_marks:Number(a.theory_marks || 0), starter_url:a.starter_url, questions:a.questions, rubric:a.rubric }
     try { id ? await api.put('/assessments/'+id,row) : await api.post('/assessments',row); nav('/admin') } catch(e:any){ alert(e.message) } setBusy(false) }
   return <><PageHeader title={id?'Edit assessment':'New assessment'} action={<Button onClick={save} disabled={busy}>Save assessment</Button>}/>
     <div className="space-y-4">
@@ -25,6 +25,7 @@ export default function Editor() {
         <div><Label>Maximum marks {total>0 && '(auto from rubric)'}</Label><input type="number" value={total||a.max_marks} disabled={total>0} onChange={e=>set('max_marks',e.target.value)}/></div>
         <div><Label>Starter files (ZIP, optional)</Label><input type="file" onChange={e=>e.target.files?.[0]&&upload(e.target.files[0])}/>{a.starter_url && <p className="mt-1 text-xs text-emerald-600">Starter file uploaded</p>}</div>
         <label className="flex items-center gap-2 pt-5 text-sm"><input type="checkbox" checked={a.allow_resubmit} onChange={e=>set('allow_resubmit',e.target.checked)}/>Allow resubmission before the deadline</label></Card>
+      <Card><h2 className="mb-3 font-semibold">Theory assessment</h2><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={a.theory_enabled} onChange={e=>set('theory_enabled',e.target.checked)}/>Generate code-based theory questions after ZIP upload</label>{a.theory_enabled && <div className="mt-3 grid gap-3 md:grid-cols-3"><div><Label>Questions (4–10)</Label><input type="number" min={4} max={10} value={a.theory_question_count} onChange={e=>set('theory_question_count',Number(e.target.value))}/></div><div><Label>Practical marks</Label><input type="number" min={0} value={a.practical_marks} onChange={e=>set('practical_marks',Number(e.target.value))}/></div><div><Label>Theory marks</Label><input type="number" min={1} value={a.theory_marks} onChange={e=>set('theory_marks',Number(e.target.value))}/></div></div>}</Card>
       <Card><div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">Questions</h2><Button variant="outline" onClick={()=>set('questions',[...a.questions,{ id:uid(), title:'', description:'', instructions:'' }])}>Add question</Button></div>
         <div className="space-y-3">{a.questions.map((q:Question,i:number)=><div key={q.id} className="space-y-2 rounded-md border border-zinc-200 p-3">
           <div className="flex gap-2"><textarea className="min-h-24" rows={4} placeholder={`Question ${i+1}`} value={q.title} onChange={e=>upd('questions',i,{ title:e.target.value })}/><Button variant="ghost" onClick={()=>set('questions',a.questions.filter((_:any,j:number)=>j!==i))}>Remove</Button></div>
