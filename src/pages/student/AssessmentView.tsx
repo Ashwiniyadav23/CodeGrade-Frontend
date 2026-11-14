@@ -5,7 +5,8 @@ import Report from '../../components/Report'
 import { Badge, Button, Card, Label, PageHeader, statusTone } from '../../components/ui'
 
 type SpeechRecognitionResultEvent = Event & {
-  results: { [index: number]: { [index: number]: { transcript: string } } }
+  resultIndex: number
+  results: { [index: number]: { [index: number]: { transcript: string }; isFinal: boolean }; length: number }
 }
 
 interface SpeechRecognitionInstance {
@@ -56,13 +57,22 @@ export default function AssessmentView() {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!Recognition) return
     const recognition = new Recognition()
-    recognition.continuous = false
-    recognition.interimResults = false
+    recognition.continuous = true
+    recognition.interimResults = true
     recognition.lang = navigator.language
+    let lastResultIndex = 0
     recognition.onresult = event => {
-      const transcript = Object.values(event.results).map(result => result[0].transcript).join(' ')
+      const transcript = Array.from({ length: event.results.length - event.resultIndex }, (_, offset) => {
+        const result = event.results[event.resultIndex + offset]
+        return result.isFinal ? result[0].transcript.trim() : ''
+      }).filter(Boolean).join(' ')
+      if (!transcript || event.resultIndex < lastResultIndex) return
+      lastResultIndex = event.results.length
+      const cleanedTranscript = transcript
+        .replace(/\b(\w+)(?:\s+\1\b)+/gi, '$1')
+        .replace(/\s+([,.!?])/g, '$1')
       setAnswers(previous => previous.map((answer, answerIndex) => answerIndex === index
-        ? `${answer}${answer ? ' ' : ''}${transcript}`
+        ? `${answer}${answer ? ' ' : ''}${cleanedTranscript}`
         : answer))
     }
     recognition.onend = () => {
@@ -108,6 +118,6 @@ export default function AssessmentView() {
           <div><Label>GitHub repository link (optional)</Label><input placeholder="https://github.com/you/project" value={gh} onChange={e=>setGh(e.target.value)}/></div>
           <Button onClick={submit} disabled={busy}>{busy?'Uploading and evaluating…':sub?'Resubmit':'Submit assignment'}</Button></div>
           : <p className="text-sm text-zinc-500">{late?'The deadline has passed.':'Resubmission is not enabled for this assessment.'}</p>}</Card>
-      {sub?.theory_questions?.length > 0 && !ev && <Card><h3 className="mb-2 font-semibold">Theory assessment</h3><p className="mb-4 text-sm text-zinc-600">Answer every question based on your submitted implementation. You can type or use the microphone to speak your answer.</p><div className="space-y-4" onCopy={blockQuestionCopy} onContextMenu={blockQuestionCopy} onKeyDown={blockQuestionKey}>{sub.theory_questions.map((q:any,i:number)=><div key={q.id} className="rounded-md border border-zinc-200 p-3"><div className="select-none text-sm font-medium">{i+1}. {q.question}</div><div className="mt-2 flex items-start gap-2"><textarea className="mt-0" rows={4} value={answers[i] || ''} onChange={e=>setAnswers(previous=>previous.map((answer,j)=>j===i?e.target.value:answer))} placeholder="Explain your answer..." /><Button type="button" variant={listeningIndex === i ? 'danger' : 'outline'} className="shrink-0 px-3" onClick={()=>toggleSpeech(i)} disabled={!speechSupported || busy} aria-label={listeningIndex === i ? 'Stop speaking' : 'Speak your answer'} title={speechSupported ? 'Speak your answer' : 'Speech recognition is not supported in this browser'}>{listeningIndex === i ? 'Stop' : '🎤'}</Button></div></div>)}</div><Button className="mt-4" onClick={submitTheory} disabled={busy}>{busy?'Submitting answers…':'Submit theory answers'}</Button>{!speechSupported && <p className="mt-2 text-xs text-zinc-500">Voice answers are not supported in this browser. You can still type your answers.</p>}</Card>}
+      {sub?.theory_questions?.length > 0 && !ev && <Card><h3 className="mb-2 font-semibold">Theory assessment</h3><p className="mb-4 text-sm text-zinc-600">Answer every question based on your submitted implementation. You can type or use the microphone to speak your answer.</p><div className="space-y-4" onCopy={blockQuestionCopy} onContextMenu={blockQuestionCopy} onKeyDown={blockQuestionKey}>{sub.theory_questions.map((q:any,i:number)=><div key={q.id} className="rounded-md border border-zinc-200 p-3"><div className="select-none text-sm font-medium">{i+1}. {q.question}</div><div className="mt-2 flex items-start gap-2"><textarea className="mt-0" rows={4} value={answers[i] || ''} onChange={e=>setAnswers(previous=>previous.map((answer,j)=>j===i?e.target.value:answer))} placeholder="Explain your answer..." /><Button type="button" variant={listeningIndex === i ? 'danger' : 'outline'} className="shrink-0 px-3" onClick={()=>toggleSpeech(i)} disabled={!speechSupported || busy} aria-label={listeningIndex === i ? 'Stop speaking' : 'Speak your answer'} title={speechSupported ? 'Speak your answer' : 'Speech recognition is not supported in this browser'}>{listeningIndex === i ? '■' : <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>}</Button></div></div>)}</div><Button className="mt-4" onClick={submitTheory} disabled={busy}>{busy?'Submitting answers…':'Submit theory answers'}</Button>{!speechSupported && <p className="mt-2 text-xs text-zinc-500">Voice answers are not supported in this browser. You can still type your answers.</p>}</Card>}
       {ev ? <><h2 className="pt-2 text-lg font-semibold">Evaluation feedback</h2><Report ev={ev}/></> : sub && <Card className="text-sm text-zinc-500">Your evaluation feedback will appear here once your instructor reviews it.</Card>}</div></>
 }
