@@ -97,10 +97,14 @@ export default function AssessmentView() {
     }
   }
   const submit = async () => {
-    if (!file && !gh) return alert('Upload a ZIP file or add a GitHub link.')
+    if (!file && !gh.trim()) return alert('Upload a ZIP file or add a GitHub link.')
     if (file && !file.name.toLowerCase().endsWith('.zip')) return alert('Please upload a .zip file.')
-    setBusy(true); const fd = new FormData(); if (file) fd.append('file', file); fd.append('github_url', gh)
-    try { await api.post(`/assessments/${a.id}/submissions`, fd); setFile(null); setGh(''); await load() } catch (e: any) { alert(e.message) } setBusy(false)
+    setBusy(true)
+    const fd = new FormData()
+    if (file) fd.append('file', file)
+    if (gh.trim()) fd.append('github_url', gh.trim())
+    try { await api.post(`/assessments/${a.id}/submissions`, fd); setFile(null); setGh(''); await load() } catch (e: any) { alert(e.message) }
+    setBusy(false)
   }
   const submitTheory = async () => { if (!answers.length || answers.some(answer => !answer.trim())) return alert('Answer every theory question before submitting.'); setBusy(true); try { await api.post(`/assessments/${a.id}/theory`, { answers }); await load() } catch (e: any) { alert(e.message) } setBusy(false) }
   const blockQuestionCopy = (event: SyntheticEvent) => { if (event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLInputElement) return; event.preventDefault() }
