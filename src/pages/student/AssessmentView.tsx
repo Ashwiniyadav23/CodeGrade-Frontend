@@ -103,7 +103,13 @@ export default function AssessmentView() {
     const fd = new FormData()
     if (file) fd.append('file', file)
     if (gh.trim()) fd.append('github_url', gh.trim())
-    try { await api.post(`/assessments/${a.id}/submissions`, fd); setFile(null); setGh(''); await load() } catch (e: any) { alert(e.message) }
+    try {
+      const result = await api.post(`/assessments/${a.id}/submissions`, fd)
+      setFile(null)
+      setGh('')
+      await load()
+      if (result.warning) alert(result.warning)
+    } catch (e: any) { alert(e.message) }
     setBusy(false)
   }
   const submitTheory = async () => { if (!answers.length || answers.some(answer => !answer.trim())) return alert('Answer every theory question before submitting.'); setBusy(true); try { await api.post(`/assessments/${a.id}/theory`, { answers }); await load() } catch (e: any) { alert(e.message) } setBusy(false) }
