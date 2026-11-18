@@ -112,12 +112,21 @@ export default function AssessmentView() {
     } catch (e: any) { alert(e.message) }
     setBusy(false)
   }
+  const downloadStarter = async () => {
+    if (!a.starter_url) return
+    if (a.starter_url.startsWith('gridfs:')) {
+      try { await api.download(`/starters/${a.starter_url.slice('gridfs:'.length)}/download`, 'starter-files.zip') }
+      catch (e: any) { alert(e.message) }
+      return
+    }
+    window.open(a.starter_url, '_blank', 'noopener,noreferrer')
+  }
   const submitTheory = async () => { if (!answers.length || answers.some(answer => !answer.trim())) return alert('Answer every theory question before submitting.'); setBusy(true); try { await api.post(`/assessments/${a.id}/theory`, { answers }); await load() } catch (e: any) { alert(e.message) } setBusy(false) }
   const blockQuestionCopy = (event: SyntheticEvent) => { if (event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLInputElement) return; event.preventDefault() }
   const blockQuestionKey = (event: KeyboardEvent) => { if (event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLInputElement) return; if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'c') event.preventDefault() }
   return <><PageHeader title={a.title} sub={`${a.language} · ${a.difficulty} · Due ${a.deadline ? new Date(a.deadline).toLocaleString() : 'no deadline'} · ${a.max_marks} marks`} action={sub && <Badge tone={statusTone[sub.status]}>{sub.status === 'review' ? 'Under review' : sub.status}</Badge>} />
     <div className="space-y-4">
-      {a.description && <Card><p className="whitespace-pre-wrap text-sm text-zinc-700">{a.description}</p>{a.starter_url && <a href={a.starter_url} target="_blank"><Button variant="outline" className="mt-3">Download starter files</Button></a>}</Card>}
+      {(a.description || a.starter_url) && <Card>{a.description && <p className="whitespace-pre-wrap text-sm text-zinc-700">{a.description}</p>}{a.starter_url && <Button variant="outline" className="mt-3" onClick={downloadStarter}>Download starter files</Button>}</Card>}
       {a.questions.map((q, i) => <Card key={q.id}><div className="whitespace-pre-wrap font-medium">{i + 1}. {q.title}</div><p className="mt-1 whitespace-pre-wrap text-sm text-zinc-700">{q.description}</p>
         {q.instructions && <p className="mt-2 whitespace-pre-wrap rounded-md bg-zinc-50 p-3 text-sm text-zinc-600">{q.instructions}</p>}</Card>)}
       <Card><h3 className="mb-3 font-semibold">Evaluation rubric</h3><div className="space-y-3">{a.rubric.map(c => <details key={c.id} className="rounded-md border border-zinc-200 p-3"><summary className="cursor-pointer text-sm font-medium">{c.name} <span className="text-zinc-500">({c.marks} marks)</span></summary>
