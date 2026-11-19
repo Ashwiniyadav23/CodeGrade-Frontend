@@ -3,7 +3,7 @@ import { useAuth } from '../lib/auth'
 import { cn } from './ui'
 export default function Layout() {
   const { profile, signOut } = useAuth()
-  const nav = profile?.role==='admin' ? [['/admin','Assessments'],['/admin/submissions','Submissions']] : [['/student','My assessments']]
+  const nav = profile?.role==='admin' ? [['/admin','Assessments'],['/admin/submissions','Submissions'],['/admin/access-requests','Access requests']] : [['/student','My assessments'],['/student/admin-access','Admin access']]
   return <div className="flex min-h-screen">
     <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white/90 p-5 backdrop-blur">
       <div className="mb-10 flex items-center gap-3"><div className="brand-mark">C</div><div><div className="font-bold tracking-tight text-slate-900">CodeGrade</div><div className="text-[11px] font-medium text-slate-400">Learn. Build. Grow.</div></div></div>

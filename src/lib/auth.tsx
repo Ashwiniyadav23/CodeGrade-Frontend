@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { api, token } from './api'
-type Profile = { id:string; email:string; full_name:string; role:'admin'|'student'; batch:string|null }
+type Profile = { id:string; email:string; full_name:string; role:'admin'|'student'; admin_access_status?:'none'|'pending'|'approved'|'declined'; batch:string|null }
 const Ctx = createContext<{ profile:Profile|null; loading:boolean; login:(t:string)=>Promise<void>; signOut:()=>void }>({ profile:null, loading:true, login:async()=>{}, signOut:()=>{} })
 export const useAuth = () => useContext(Ctx)
 export function AuthProvider({ children }:{ children:ReactNode }) {

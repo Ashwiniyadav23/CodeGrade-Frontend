@@ -12,6 +12,8 @@ import Dashboard from './pages/student/Dashboard'
 import AssessmentView from './pages/student/AssessmentView'
 import CodeWorkspacePage from './pages/student/CodeWorkspacePage'
 import ErrorFace from './components/ErrorFace'
+import AccessRequests from './pages/admin/AccessRequests'
+import AdminAccess from './pages/student/AdminAccess'
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
   state = { error: null }
@@ -34,9 +36,9 @@ export default function App() {
         <Route path="/" element={<Navigate to={admin?'/admin':'/student'} replace/>}/>
         {admin ? <>
           <Route path="/admin" element={<Assessments/>}/><Route path="/admin/new" element={<Editor/>}/><Route path="/admin/:id/edit" element={<Editor/>}/>
-          <Route path="/admin/:id/assign" element={<Assign/>}/><Route path="/admin/submissions" element={<Submissions/>}/><Route path="/admin/submissions/:id" element={<Review/>}/>
+          <Route path="/admin/:id/assign" element={<Assign/>}/><Route path="/admin/submissions" element={<Submissions/>}/><Route path="/admin/submissions/:id" element={<Review/>}/><Route path="/admin/access-requests" element={<AccessRequests/>}/>
         </> : <>
-          <Route path="/student" element={<Dashboard/>}/><Route path="/student/:id" element={<AssessmentView/>}/><Route path="/student/:id/code" element={<CodeWorkspacePage/>}/>
+          <Route path="/student" element={<Dashboard/>}/><Route path="/student/admin-access" element={<AdminAccess/>}/><Route path="/student/:id" element={<AssessmentView/>}/><Route path="/student/:id/code" element={<CodeWorkspacePage/>}/>
         </>}
         <Route path="*" element={<Navigate to="/" replace/>}/></Route></Routes>
     </ErrorBoundary>
