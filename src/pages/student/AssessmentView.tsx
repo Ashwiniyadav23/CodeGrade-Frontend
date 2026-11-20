@@ -114,6 +114,11 @@ export default function AssessmentView() {
   }
   const downloadStarter = async () => {
     if (!a.starter_url) return
+    if (a.starter_url.startsWith('cloudinary-manifest:')) {
+      try { await api.download(`/starters/cloudinary/download?url=${encodeURIComponent(a.starter_url)}`, 'starter-files.zip') }
+      catch (e: any) { alert(e.message) }
+      return
+    }
     if (a.starter_url.startsWith('gridfs:')) {
       try { await api.download(`/starters/${a.starter_url.slice('gridfs:'.length)}/download`, 'starter-files.zip') }
       catch (e: any) { alert(e.message) }
